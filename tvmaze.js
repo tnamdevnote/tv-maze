@@ -1,6 +1,6 @@
 const searchForm = document.querySelector('#search-form');
-const episodes = document.querySelector('#episodes-list');
 const showsList = document.querySelector('#shows-list');
+const episodesList = document.querySelector('#episodes-list');
 
 
 async function searchShows(query) {
@@ -26,22 +26,19 @@ async function searchShows(query) {
  */
 
 const populateShows = (shows) => {
-  // showsList.empty();
 
   for (let show of shows) {
     const item = document.createElement('div');
-    item.setAttribute('class', 'col-md-6 col-lg-3 Show')
-    item.innerHTML = 
-      `<div class="Show" data-show-id="${show.id}">
-         <div class="card" data-show-id="${show.id}">
+    item.setAttribute('class', `col-md-6 col-lg-3`)
+    item.innerHTML = `
+         <div class="card" data-id="${show.id}">
            <img class="card-img-top" src="${show.image}">
            <div class="card-body">
              <h5 class="card-title">${show.name}</h5>
              <p class="card-text">${show.summary}</p>
-             <button class="btn btn-primary episodes" type="button">Episodes</button>
+             <button class="btn btn-primary episodes" data-id="${show.id}" type="button">Episodes</button>
            </div>
          </div>
-       </div>
       `;
     showsList.append(item);
   }
@@ -55,7 +52,6 @@ const populateShows = (shows) => {
 
 searchForm.addEventListener("submit", async function handleSearch (evt) {
   evt.preventDefault();
-  console.log(evt)
   const input = document.querySelector('#search-query');
   let query = input.value.trim();
   if (!query) return;
@@ -68,9 +64,13 @@ searchForm.addEventListener("submit", async function handleSearch (evt) {
 });
 
 // listen for episode button click inside each card.
-showsList.addEventListener("click",  evt => {
+showsList.addEventListener("click", async function handleButton (evt) {
   if(evt.target.type === 'button') {
-    
+    document.querySelector('#episodes-area').style.display = 'block'
+    const id = evt.target.dataset.id;
+    // showsList.querySelector(`[data-id="${evt.target.dataset.id}"]`);
+    let episodes = await getEpisodes(id);
+    populateEpisodes(episodes)
   }
 });
 
@@ -94,8 +94,13 @@ async function getEpisodes(id) {
 }
 
 const populateEpisodes = (episodes) => {
-  const episodesList = document.querySelector('#episodes-list');
-  const episode = document.createElement('li');
-  episode.innerHTML = `${episodes.name} (season ${episodes.season}, number ${episodes.number})`
-  episodesList.append(episode);
+  
+  
+  episodes.forEach(episode => {
+    const item = document.createElement('li');
+    item.innerHTML = `${episode.name} (season ${episode.season}, number ${episode.number})`;
+    episodesList.append(item);
+  });
+
+  return episodesList;
 }
