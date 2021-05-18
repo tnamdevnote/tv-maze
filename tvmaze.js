@@ -6,14 +6,14 @@ const episodesModal = document.querySelector('#episodesModal');
 
 const searchShows = async (query) => {
   // TODO: Make an ajax request to the searchShows api.  Remove
-  const results = await axios.get(`http://api.tvmaze.com/search/shows?q=${query}`)
+  const results = await axios.get(`https://api.tvmaze.com/search/shows?q=${query}`)
 
   const showList = results.data.map(showObj => {
     return {
       id: showObj.show.id,
       name: showObj.show.name,
       summary: showObj.show.summary,
-      image: showObj.show.image ? showObj.show.image.medium : "https://store-images.s-microsoft.com/image/apps.65316.13510798887490672.6e1ebb25-96c8-4504-b714-1f7cbca3c5ad.f9514a23-1eb8-4916-a18e-99b1a9817d15?mode=scale&q=90&h=300&w=300"
+      image: showObj.show.image ? showObj.show.image.medium : "httpss://store-images.s-microsoft.com/image/apps.65316.13510798887490672.6e1ebb25-96c8-4504-b714-1f7cbca3c5ad.f9514a23-1eb8-4916-a18e-99b1a9817d15?mode=scale&q=90&h=300&w=300"
     };
   })
   
@@ -47,7 +47,7 @@ const populateShows = (shows) => {
  */
  const getEpisodes = async (id) => {
   // TODO: get episodes from tvmaze
-  const results = await axios.get(`http://api.tvmaze.com/shows/${id}/episodes`);
+  const results = await axios.get(`https://api.tvmaze.com/shows/${id}/episodes`);
   const episodes = results.data.map(episodeObj => {
     return { id: episodeObj.id, name: episodeObj.name, season: episodeObj.season, number: episodeObj.number }
   })
