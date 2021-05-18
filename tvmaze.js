@@ -13,7 +13,7 @@ const searchShows = async (query) => {
       id: showObj.show.id,
       name: showObj.show.name,
       summary: showObj.show.summary,
-      image: showObj.show.image ? showObj.show.image.medium : "https://store-images.s-microsoft.com/image/apps.65316.13510798887490672.6e1ebb25-96c8-4504-b714-1f7cbca3c5ad.f9514a23-1eb8-4916-a18e-99b1a9817d15?mode=scale&q=90&h=300&w=300"
+      image: showObj.show.image ? showObj.show.image.medium : "http://store-images.s-microsoft.com/image/apps.65316.13510798887490672.6e1ebb25-96c8-4504-b714-1f7cbca3c5ad.f9514a23-1eb8-4916-a18e-99b1a9817d15?mode=scale&q=90&h=300&w=300"
     };
   })
   
