@@ -1,9 +1,10 @@
 const searchForm = document.querySelector('#search-form');
 const showsList = document.querySelector('#shows-list');
 const episodesList = document.querySelector('#episodes-list');
+const episodesModal = document.querySelector('#episodesModal');
 
 
-async function searchShows(query) {
+const searchShows = async (query) => {
   // TODO: Make an ajax request to the searchShows api.  Remove
   const results = await axios.get(`http://api.tvmaze.com/search/shows?q=${query}`)
 
@@ -19,12 +20,9 @@ async function searchShows(query) {
   return showList;
 }
 
-
-
 /** Populate shows list:
  *     - given list of shows, add shows to DOM
  */
-
 const populateShows = (shows) => {
 
   for (let show of shows) {
@@ -36,7 +34,7 @@ const populateShows = (shows) => {
            <div class="card-body">
              <h5 class="card-title">${show.name}</h5>
              <p class="card-text">${show.summary}</p>
-             <button class="btn btn-primary episodes" data-id="${show.id}" type="button">Episodes</button>
+             <button type="button" class="btn btn-primary episodes" data-id="${show.id}" data-bs-toggle="modal" data-bs-target="#episodesModal">Episodes</button>
            </div>
          </div>
       `;
@@ -44,19 +42,38 @@ const populateShows = (shows) => {
   }
 }
 
+/** Given a show ID, return list of episodes:
+ *      { id, name, season, number }
+ */
+ const getEpisodes = async (id) => {
+  // TODO: get episodes from tvmaze
+  const results = await axios.get(`http://api.tvmaze.com/shows/${id}/episodes`);
+  const episodes = results.data.map(episodeObj => {
+    return { id: episodeObj.id, name: episodeObj.name, season: episodeObj.season, number: episodeObj.number }
+  })
+
+  // TODO: return array-of-episode-info, as described in docstring above
+  return episodes;
+}
+
+// populate each episode as a list element inside the #episodes-list.
+const populateEpisodes = (episodes) => {
+  episodes.forEach(episode => {
+    const item = document.createElement('li');
+    item.innerHTML = `${episode.name} (season ${episode.season}, number ${episode.number})`;
+    episodesList.append(item);
+  });
+}
+
 
 /** Handle search form submission:
- *    - hide episodes area
  *    - get list of matching shows and show in shows list
  */
-
-searchForm.addEventListener("submit", async function handleSearch (evt) {
+searchForm.addEventListener("submit", onSearch = async evt => {
   evt.preventDefault();
   const input = document.querySelector('#search-query');
   let query = input.value.trim();
   if (!query) return;
-
-  // $("#episodes-area").show();
 
   let shows = await searchShows(query);
   populateShows(shows);
@@ -64,43 +81,18 @@ searchForm.addEventListener("submit", async function handleSearch (evt) {
 });
 
 // listen for episode button click inside each card.
-showsList.addEventListener("click", async function handleButton (evt) {
+showsList.addEventListener("click", onClick = async evt => {
   if(evt.target.type === 'button') {
-    document.querySelector('#episodes-area').style.display = 'block'
-    const id = evt.target.dataset.id;
-    // showsList.querySelector(`[data-id="${evt.target.dataset.id}"]`);
+    const id = evt.target.dataset.id;;
     let episodes = await getEpisodes(id);
     populateEpisodes(episodes)
   }
 });
 
+// When the modal is closed, empty the list. 
+episodesModal.addEventListener('click', onClick = evt => {
+  if(evt.target.type === 'button' || evt.target === episodesModal) {
+    episodesList.innerHTML = '';
+  }
+})
 
-
-/** Given a show ID, return list of episodes:
- *      { id, name, season, number }
- */
-
-async function getEpisodes(id) {
-  // TODO: get episodes from tvmaze
-  //       you can get this by making GET request to
-  //       http://api.tvmaze.com/shows/SHOW-ID-HERE/episodes
-  const results = await axios.get(`http://api.tvmaze.com/shows/${id}/episodes`);
-  const episodesList = results.data.map(episodeObj => {
-    return { id: episodeObj.id, name: episodeObj.name, season: episodeObj.season, number: episodeObj.number }
-  })
-
-  // TODO: return array-of-episode-info, as described in docstring above
-  return episodesList;
-}
-
-const populateEpisodes = (episodes) => {
-  
-  
-  episodes.forEach(episode => {
-    const item = document.createElement('li');
-    item.innerHTML = `${episode.name} (season ${episode.season}, number ${episode.number})`;
-    episodesList.append(item);
-  });
-
-  return episodesList;
-}
