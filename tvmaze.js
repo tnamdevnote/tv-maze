@@ -75,6 +75,7 @@ searchForm.addEventListener("submit", onSearch = async evt => {
   let query = input.value.trim();
   if (!query) return;
 
+  showsList.innerHTML = '';
   let shows = await searchShows(query);
   populateShows(shows);
   input.value = '';
